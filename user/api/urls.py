@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import CurrentUserAPIView
-
+from .views import CurrentUserAPIView,CustomObtainAuthToken
+from django.conf.urls import url
 
 urlpatterns = [
-    path("user/",CurrentUserAPIView.as_view(),name="CurrentUser")
+       url(r'authenticate/', CustomObtainAuthToken.as_view()),
+    path("user/",CurrentUserAPIView.as_view(),name="CurrentUser"),       
 ]

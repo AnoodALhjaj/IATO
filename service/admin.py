@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Organzition ,Customer,Notification,BigService,Service,ServiceBookDetails,SmallService,BookService
+from .models import Customer,Notification,BigService,Service,ServiceBookDetails,SmallService,BookService
 
 
-admin.site.register(Organzition)
+
 admin.site.register(Customer)
 admin.site.register(Notification)
 admin.site.register(BigService)

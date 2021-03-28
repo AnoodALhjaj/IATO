@@ -1,9 +1,23 @@
 from rest_framework import generics,viewsets
-from ..models import Service, Customer , Organzition , Notification , BigService, SmallService,CustomerBill,BookService,ServiceBookDetails
-from .serlizer import ServiceSerlizer, CustomerSerlizer , OrganzitionSerlizer ,NotificationSerlizer , GroupSerlizer ,PermissionSerlizer, UserSerlizer,BigServiceSerlizer , SmallServiceSerlizer,CustomerBillSerlizer,ServiceBookDetailsSerlizer,BookServiceSerlizer,UserSerlizerEd
+from ..models import Service, Customer ,  Notification , BigService, SmallService,CustomerBill,BookService,ServiceBookDetails,Tracking
+from .serlizer import ServiceSerlizer, CustomerSerlizer , NotificationSerlizer , GroupSerlizer ,PermissionSerlizer, UserSerlizer,BigServiceSerlizer , SmallServiceSerlizer,CustomerBillSerlizer,ServiceBookDetailsSerlizer,BookServiceSerlizer,UserSerlizerEd,TrackingSerlizer,CustomerBillSignalSerlizer
 from django.contrib.auth.models import Group,Permission,User
 from rest_framework.response import Response    
 from rest_framework import status
+from rest_framework import filters
+
+
+
+class CustomerBillSignalAPI(viewsets.ModelViewSet):
+    
+    queryset=CustomerBill.objects.all()
+    serializer_class=CustomerBillSignalSerlizer
+
+    
+class TrackingAPI(viewsets.ModelViewSet):
+    
+    queryset=Tracking.objects.all().order_by("-id")
+    serializer_class=TrackingSerlizer
 
 
 class UserAPI(viewsets.ModelViewSet):
@@ -73,10 +87,6 @@ class CustomerAPI(viewsets.ModelViewSet):
 
 
 
-class OrganzitionAPI(viewsets.ModelViewSet):
-    queryset=Organzition.objects.all()
-    serializer_class=OrganzitionSerlizer
-
 
 
 class NotifcationAPI(viewsets.ModelViewSet):
@@ -86,14 +96,16 @@ class NotifcationAPI(viewsets.ModelViewSet):
 
 
 class CustomerBillAPI(viewsets.ModelViewSet):
-    queryset=CustomerBill.objects.all()
+    queryset=CustomerBill.objects.all().order_by("-id")
     serializer_class=CustomerBillSerlizer
 
 
 
 class ServiceBookDetailsAPI(viewsets.ModelViewSet):
-    queryset=ServiceBookDetails.objects.all()
+    queryset=ServiceBookDetails.objects.all().order_by("-id")
     serializer_class=ServiceBookDetailsSerlizer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['serv_smallserv_small_service', 'serv_bigserv_big_service']
     def create(self, request, *args, **kwargs):
         #data = request.data.get('items', request.data)
         

@@ -1,10 +1,14 @@
 
-from django.db.models import fields
-from django.db.models.fields.related import ManyToManyField
 from rest_framework import serializers
-from ..models import Service,Customer,Organzition,Notification,BigService, SmallService,CustomerBill,ServiceBookDetails,BookService
+from ..models import Service,Customer,Notification,BigService, SmallService,CustomerBill,ServiceBookDetails,BookService,Tracking
 from django.contrib.auth.models import Group,Permission,User
 import json
+
+class TrackingSerlizer(serializers.ModelSerializer):
+    class Meta:
+        model=Tracking
+        fields="__all__"
+
 class UserSerlizer(serializers.ModelSerializer):
     
     class Meta:
@@ -21,6 +25,7 @@ class GroupSerlizer(serializers.ModelSerializer):
     class Meta:
         model=Group
         fields="__all__"
+
 
 class PermissionSerlizer(serializers.ModelSerializer):
     class Meta:
@@ -39,10 +44,6 @@ class CustomerSerlizer(serializers.ModelSerializer):
         fields="__all__"
 
 
-class OrganzitionSerlizer(serializers.ModelSerializer):
-    class Meta:
-        model=Organzition
-        fields="__all__"
 
 
 class NotificationSerlizer(serializers.ModelSerializer):
@@ -62,6 +63,43 @@ class SmallServiceSerlizer(serializers.ModelSerializer):
         model=SmallService
         fields="__all__"
 
+class CustomerBillSignalSerlizer(serializers.ModelSerializer):
+     
+    class Meta:
+        model=CustomerBill
+        fields=["user_id"]
+
+class CustomerBillSerlizer(serializers.ModelSerializer):
+    Customer=serializers.SerializerMethodField()
+    Services=serializers.SerializerMethodField()
+    Servicelist=serializers.SerializerMethodField()
+    Servicelistname=serializers.SerializerMethodField()
+    user=serializers.SerializerMethodField()
+    def get_Customer(self, instance):
+        return instance.cusotmer_id.name
+    def get_Services(self, instance):
+        Service=ServiceBookDetails.objects.filter(customer_bill_id=instance.id)
+        return Service.count()
+    def get_Servicelist(self, instance):
+        Services=ServiceBookDetails.objects.filter(customer_bill_id=instance.id).values()
+        return  Services
+    def get_Servicelistname(self, instance):
+            Services=self.get_Servicelist(instance);
+            ServicesResult=[];
+            for i in Services:
+                if i['big_service_id'] is not None:
+                    ServicesResult.append(BigService.objects.filter(id=i['big_service_id']).values())
+                else:
+                    ServicesResult.append(SmallService.objects.filter(id=i['small_service_id']).values())
+            return ServicesResult
+    def get_user(self, instance):
+        if instance.user_id:
+            user=User.objects.get(username=instance.user_id)
+            return user.first_name
+     
+    class Meta:
+        model=CustomerBill
+        fields="__all__"
 
 class CustomerBillSerlizer(serializers.ModelSerializer):
     Customer=serializers.SerializerMethodField()
